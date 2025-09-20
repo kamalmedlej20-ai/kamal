@@ -70,6 +70,48 @@
 
     @media (max-width: 900px){ .hero, .contact{grid-template-columns:1fr} .grid.cols-3{grid-template-columns:1fr 1fr} }
     @media (max-width: 640px){ .grid.cols-3, .grid.cols-2{grid-template-columns:1fr} }
+    /* ===== Animations ===== */
+    :root{ --ani: 800ms; --ani-ease: cubic-bezier(.2,.8,.2,1); }
+    .reveal{opacity:0; transform:translateY(22px) scale(.98); transition:opacity var(--ani) var(--ani-ease), transform var(--ani) var(--ani-ease)}
+    .reveal.show{opacity:1; transform:none}
+    .hover-float{transition:transform .5s var(--ani-ease), box-shadow .5s var(--ani-ease)}
+    .hover-float:hover{transform:translateY(-6px); box-shadow:0 18px 40px rgba(0,0,0,.35)}
+
+    /* ===== Slider (Hero Gallery) ===== */
+    .slider{position:relative;border-radius:18px;overflow:hidden}
+    .slider .slide{position:absolute;inset:0;opacity:0;transition:opacity 900ms var(--ani-ease);background:#0f1b3d;display:grid;place-items:center}
+    .slider .slide.active{opacity:1}
+    .slider img{width:100%;height:100%;object-fit:cover}
+    .slider .dots{position:absolute;inset-inline:0;inset-block-end:10px;display:flex;gap:6px;justify-content:center}
+    .slider .dot{width:8px;height:8px;border-radius:999px;background:#24406f;box-shadow:0 0 0 1px #2c4a80 inset;cursor:pointer}
+    .slider .dot.active{background:#3a86ff}
+
+    /* ===== Gallery Grid ===== */
+    #gallery .thumb{position:relative;overflow:hidden;border-radius:14px}
+    #gallery .thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 900ms var(--ani-ease)}
+    #gallery .thumb:hover img{transform:scale(1.06)}
+    #gallery .cap{position:absolute;inset-inline:10px;inset-block-end:10px;background:rgba(9,14,30,.55);border:1px solid #22335e;color:#cfe3ff;padding:.35rem .6rem;border-radius:10px;font-size:.9rem}
+    /* ===== Mobile Menu CSS ===== */
+    :root{ --ani: 800ms; --ani-ease: cubic-bezier(.2,.8,.2,1); }
+    .reveal{opacity:0; transform:translateY(22px) scale(.98); transition:opacity var(--ani) var(--ani-ease), transform var(--ani) var(--ani-ease)}
+    .reveal.show{opacity:1; transform:none}
+
+    .hamburger{display:none;inline-size:44px;block-size:44px;border:1px solid #28406e;background:#0f1b3d;color:#cfe3ff;border-radius:10px;font-size:22px;line-height:1;display:grid;place-items:center}
+    .hamburger:focus{outline:2px solid #3a86ff;outline-offset:2px}
+    .mobile-menu{position:fixed;inset-inline:0;inset-block-start:72px;background:rgba(11,19,43,.98);border-block-start:1px solid #243055;backdrop-filter:blur(10px);padding:12px 16px;display:none}
+    .mobile-menu.open{display:block;animation:menuDrop .28s cubic-bezier(.2,.8,.2,1)}
+    .mobile-menu a{display:block;padding:12px 10px;border-radius:10px;color:#c7d2fe;border:1px solid transparent}
+    .mobile-menu a:hover{background:#0f1b3d;border-color:#253a6b}
+    .mobile-menu .cta{display:block;text-align:center;margin-top:8px}
+    @keyframes menuDrop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+
+    @media (max-width: 900px){
+      .hero, .contact{grid-template-columns:1fr}
+      .grid.cols-3{grid-template-columns:1fr 1fr}
+      .nav .row{display:none}
+      .hamburger{display:grid}
+    }
+    @media (max-width: 640px){ .grid.cols-3, .grid.cols-2{grid-template-columns:1fr} }
   </style>
 </head>
 <body>
@@ -77,7 +119,7 @@
   <header>
     <div class="container nav">
       <div class="brand">
-        <img src="https://i.postimg.cc/GhnVrp7M/Whats-App-Image-2025-09-20-at-20-38-46-72dcbcf7-removebg-preview-1.png" alt="kamal services logo" onerror="this.style.display='none'">
+        <img src="https://i.postimg.cc/g0TH0wNf/Kamal-Services-Logo-Design.png" alt="kamal services logo" onerror="this.style.display='none'">
         <span>kamal services</span>
       </div>
       <nav class="row">
@@ -87,8 +129,18 @@
         <a class="link" href="#contact">اتصل بنا</a>
         <a class="cta" id="waTop" href="https://wa.me/81338554" target="_blank" rel="noopener">واتساب مباشر</a>
       </nav>
+      <button class="hamburger" id="menuBtn" aria-label="القائمة" aria-controls="mobileMenu" aria-expanded="false">☰</button>
     </div>
   </header>
+
+  <!-- Mobile Menu -->
+  <nav id="mobileMenu" class="mobile-menu" hidden>
+    <a class="link" href="#services">الخدمات</a>
+    <a class="link" href="#projects">الأعمال</a>
+    <a class="link" href="#about">عنّا</a>
+    <a class="link" href="#contact">اتصل بنا</a>
+    <a class="cta" href="https://wa.me/81338554" target="_blank" rel="noopener">واتساب مباشر</a>
+  </nav>
 
   <main id="top">
     <!-- Hero -->
@@ -108,14 +160,11 @@
           <span class="chip">🔧 صيانة</span>
         </div>
       </div>
-      <div class="card mock">
-        <svg viewBox="0 0 600 420" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="12" y="12" width="576" height="396" rx="16" stroke="#2b3f73" stroke-width="2"/>
-          <circle cx="160" cy="210" r="72" stroke="#3a86ff" stroke-width="2"/>
-          <circle cx="160" cy="210" r="8" fill="#3a86ff"/>
-          <path d="M232 210 H520" stroke="#2b3f73" stroke-width="2"/>
-          <path d="M240 160 h260 M240 180 h240 M240 200 h200 M240 240 h220 M240 260 h200" stroke="#27407a"/>
-        </svg>
+      <div class="card slider reveal" id="heroSlider">
+        <div class="slide active"><img alt="work sample 1" loading="lazy" src="https://images.unsplash.com/photo-1541534401786-2077eed87a72?q=80&w=1600&auto=format&fit=crop"/></div>
+        <div class="slide"><img alt="work sample 2" loading="lazy" src="https://images.unsplash.com/photo-1526662092594-e98c1e356d6a?q=80&w=1600&auto=format&fit=crop"/></div>
+        <div class="slide"><img alt="work sample 3" loading="lazy" src="https://images.unsplash.com/photo-1497015289639-54688650d173?q=80&w=1600&auto=format&fit=crop"/></div>
+        <div class="dots"></div>
       </div>
     </section>
 
@@ -220,6 +269,40 @@
         </div>
       </div>
     </section>
+      <!-- معرض الصور مع أنيميشن -->
+    <section id="gallery">
+      <div class="container">
+        <h2 class="reveal">معرض الصور</h2>
+        <p class="sub reveal">بعض اللقطات من أعمال التركيب والبرمجة. يمكنك استبدال الروابط بصورك الخاصة.</p>
+        <div class="grid cols-3">
+          <figure class="thumb reveal hover-float">
+            <img loading="lazy" src="https://images.unsplash.com/photo-1518779578993-ec3579fee39f?q=80&w=1600&auto=format&fit=crop" alt="Satellite install"/>
+            <figcaption class="cap">تثبيت طبق على السطح</figcaption>
+          </figure>
+          <figure class="thumb reveal hover-float">
+            <img loading="lazy" src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1600&auto=format&fit=crop" alt="Receiver setup"/>
+            <figcaption class="cap">برمجة الرسيفر</figcaption>
+          </figure>
+          <figure class="thumb reveal hover-float">
+            <img loading="lazy" src="https://images.unsplash.com/photo-1527443154391-507e9dc6c5cc?q=80&w=1600&auto=format&fit=crop" alt="Signal tuning"/>
+            <figcaption class="cap">قياس وتحسين الإشارة</figcaption>
+          </figure>
+          <figure class="thumb reveal hover-float">
+            <img loading="lazy" src="https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?q=80&w=1600&auto=format&fit=crop" alt="Cable management"/>
+            <figcaption class="cap">تنظيم وتمديد الكوابل</figcaption>
+          </figure>
+          <figure class="thumb reveal hover-float">
+            <img loading="lazy" src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1600&auto=format&fit=crop" alt="Multi-output"/>
+            <figcaption class="cap">توزيع داخلي لعدة غرف</figcaption>
+          </figure>
+          <figure class="thumb reveal hover-float">
+            <img loading="lazy" src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1600&auto=format&fit=crop" alt="Maintenance"/>
+            <figcaption class="cap">صيانة دورية وفحص</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <footer>
@@ -251,7 +334,74 @@
       const links = [document.getElementById('waLink'), document.getElementById('waTop')].filter(Boolean);
       links.forEach(a=>{ const base = a.getAttribute('href').split('?')[0]; a.setAttribute('href', `${base}?text=${text}`); });
     }
+    ['name','phone','msg'].forEach(id=> document.getElementById(id).addEventListener('input',updateWhatsAppLinks());
+
+    // ===== Mobile Menu Toggle =====
+    const btn = document.getElementById('menuBtn');
+    const mnav = document.getElementById('mobileMenu');
+    if(btn && mnav){
+      const close = ()=>{ mnav.classList.remove('open'); mnav.hidden = true; btn.setAttribute('aria-expanded','false'); };
+      const open = ()=>{ mnav.hidden = false; mnav.classList.add('open'); btn.setAttribute('aria-expanded','true'); };
+      btn.addEventListener('click', ()=> mnav.hidden ? open() : close());
+      mnav.addEventListener('click', (e)=>{ if(e.target.tagName==='A') close(); });
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
+    }
+    <script>
+    // سنة ديناميكية
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // إرسال عبر البريد
+    const form = document.getElementById('contactForm');
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const msg = document.getElementById('msg').value.trim();
+      const subject = encodeURIComponent('طلب خدمة — kamal services');
+      const body = encodeURIComponent(`الاسم: ${name}
+الهاتف: ${phone}
+
+الرسالة:
+${msg}`);
+      window.location.href = `mailto:mouhamad.medlej@gmail.com?subject=${subject}&body=${body}`;
+    });
+
+    // تحديث روابط واتساب تلقائيًا
+    function updateWhatsAppLinks(){
+      const name = encodeURIComponent(document.getElementById('name').value.trim());
+      const phone = encodeURIComponent(document.getElementById('phone').value.trim());
+      const msg = encodeURIComponent(document.getElementById('msg').value.trim());
+      const text = encodeURIComponent(`مرحبا، بدي موعد لتركيب/برمجة.
+الاسم: ${name}
+الهاتف: ${phone}
+التفاصيل: ${msg}`);
+      const links = [document.getElementById('waLink'), document.getElementById('waTop')].filter(Boolean);
+      links.forEach(a=>{ const base = a.getAttribute('href').split('?')[0]; a.setAttribute('href', `${base}?text=${text}`); });
+    }
     ['name','phone','msg'].forEach(id=> document.getElementById(id).addEventListener('input',updateWhatsAppLinks));
+
+    // ===== Scroll Reveal =====
+    const reveals = Array.from(document.querySelectorAll('.reveal'));
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target);} });
+    }, {rootMargin:'-10% 0px -10% 0px', threshold: .1});
+    reveals.forEach(el=> io.observe(el));
+
+    // ===== Hero Slider =====
+    const slider = document.getElementById('heroSlider');
+    if(slider){
+      const slides = Array.from(slider.querySelectorAll('.slide'));
+      const dotsWrap = slider.querySelector('.dots');
+      slides.forEach((_,i)=>{ const d=document.createElement('span'); d.className='dot'+(i===0?' active':''); d.addEventListener('click',()=>go(i)); dotsWrap.appendChild(d);});
+      const dots = Array.from(dotsWrap.querySelectorAll('.dot'));
+      let idx=0, timer;
+      const go = (n)=>{ idx = (n+slides.length)%slides.length; slides.forEach((s,i)=>s.classList.toggle('active', i===idx)); dots.forEach((d,i)=>d.classList.toggle('active', i===idx)); reset(); };
+      const next = ()=> go(idx+1);
+      const reset = ()=>{ clearInterval(timer); timer = setInterval(next, 4200); };
+      reset();
+      slider.addEventListener('mouseenter',()=>clearInterval(timer));
+      slider.addEventListener('mouseleave',reset);
+    }
   </script>
 </body>
 </html>
