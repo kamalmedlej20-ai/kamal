@@ -40,6 +40,11 @@
     .hero .mock{aspect-ratio:4/3;border-radius:18px;overflow:hidden;display:grid;place-items:center}
     .mock svg{width:88%;height:auto;opacity:.9}
 
+    /* Hero photo */
+    .hero-photo{aspect-ratio:4/3;border-radius:18px;overflow:hidden;display:grid}
+    .hero-photo img{width:100%;height:100%;object-fit:cover;animation:kenburns 12s ease-in-out infinite alternate}
+    @keyframes kenburns{from{transform:scale(1.02)}to{transform:scale(1.08)}}
+
     /* أقسام عامة */
     section{padding:64px 0;scroll-margin-top:96px}
     h2{font-size:clamp(22px,3.2vw,32px);margin:0 0 18px}
@@ -112,6 +117,28 @@
       .hamburger{display:none;inline-size:44px;block-size:44px;border:1px solid #28406e;background:#0f1b3d;color:#cfe3ff;border-radius:10px;font-size:22px;line-height:1;place-items:center}
     }
     @media (max-width: 640px){ .grid.cols-3, .grid.cols-2{grid-template-columns:1fr} }
+      /* ===== Hero Art (SVG Illustration) ===== */
+    .hero-art{aspect-ratio:4/3; display:grid; place-items:center; overflow:hidden}
+    .hero-art svg{width:100%; height:auto}
+    .glow{filter:drop-shadow(0 0 20px rgba(14,165,233,.35)) drop-shadow(0 0 60px rgba(58,134,255,.18))}
+    .floaty{animation:floaty 5.6s ease-in-out infinite}
+    @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    .radar{transform-origin:300px 210px; animation:radar 8s linear infinite}
+    @keyframes radar{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  @media (max-width:900px){.hamburger{display:grid}}
+    /* ===== Global entrance animations ===== */
+    :root{ --ani-dur:.8s; --ani-ease:cubic-bezier(.2,.8,.2,1); }
+    .ani{opacity:0;transform:translateY(var(--y,0)) translateX(var(--x,0)) scale(var(--scale,1)) rotate(var(--rot,0deg));filter:blur(var(--blur,0));transition:opacity var(--ani-dur) var(--ani-ease),transform var(--ani-dur) var(--ani-ease),filter var(--ani-dur) var(--ani-ease);will-change:opacity,transform,filter;transition-delay:var(--delay,0s)}
+    .ani.in{opacity:1;transform:none;filter:blur(0)}
+    /* presets */
+    .fade{ /* فقط شفافية (مع ضباب خفيف) */ --blur:2px; }
+    .fade-up{ --y:16px }
+    .fade-down{ --y:-24px }
+    .fade-right{ --x:32px }
+    .fade-left{ --x:-32px }
+    .zoom-in{ --scale:.96 }
+    .rotate-in{ --rot:-4deg; --scale:.98 }
+    @media (prefers-reduced-motion:reduce){ .ani{opacity:1;transform:none;filter:none;transition:none!important} }
   </style>
 </head>
 <body>
@@ -159,11 +186,8 @@
           <span class="chip">🔧 صيانة</span>
         </div>
       </div>
-      <div class="card slider reveal" id="heroSlider">
-        <div class="slide active"><img alt="work sample 1" loading="lazy" src="https://images.unsplash.com/photo-1541534401786-2077eed87a72?q=80&w=1600&auto=format&fit=crop"/></div>
-        <div class="slide"><img alt="work sample 2" loading="lazy" src="https://images.unsplash.com/photo-1526662092594-e98c1e356d6a?q=80&w=1600&auto=format&fit=crop"/></div>
-        <div class="slide"><img alt="work sample 3" loading="lazy" src="https://images.unsplash.com/photo-1497015289639-54688650d173?q=80&w=1600&auto=format&fit=crop"/></div>
-        <div class="dots"></div>
+      <div class="card hero-photo reveal">
+        <img id="heroPhoto" loading="lazy" alt="صورة أعمال تركيب دش" src="https://images.unsplash.com/photo-1541534401786-2077eed87a72?q=80&w=1600&auto=format&fit=crop"/>
       </div>
     </section>
 
@@ -313,94 +337,149 @@
     document.getElementById('y').textContent = new Date().getFullYear();
 
     // إرسال عبر البريد
-    const form = document.getElementById('contactForm');
-    form.addEventListener('submit', (e)=>{
-      e.preventDefault();
-      const name = document.getElementById('name').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const msg = document.getElementById('msg').value.trim();
-      const subject = encodeURIComponent('طلب خدمة — kamal services');
-      const body = encodeURIComponent(`الاسم: ${name}\nالهاتف: ${phone}\n\nالرسالة:\n${msg}`);
-      window.location.href = `mailto:mouhamad.medlej@gmail.com?subject=${subject}&body=${body}`;
-    });
+    (function(){
+      const form = document.getElementById('contactForm');
+      if(!form) return;
+      form.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        const name = document.getElementById('name').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const msg = document.getElementById('msg').value.trim();
+        const subject = encodeURIComponent('طلب خدمة — kamal services');
+        const body = encodeURIComponent(`الاسم: ${name}
+الهاتف: ${phone}
 
-    // توليد نص واتساب ديناميكي (الهيدر وزر القسم)
-    function updateWhatsAppLinks(){
-      const name = encodeURIComponent(document.getElementById('name').value.trim());
-      const phone = encodeURIComponent(document.getElementById('phone').value.trim());
-      const msg = encodeURIComponent(document.getElementById('msg').value.trim());
-      const text = encodeURIComponent(`مرحبا، بدي موعد لتركيب/برمجة.\nالاسم: ${name}\nالهاتف: ${phone}\nالتفاصيل: ${msg}`);
-      const links = [document.getElementById('waLink'), document.getElementById('waTop')].filter(Boolean);
-      links.forEach(a=>{ const base = a.getAttribute('href').split('?')[0]; a.setAttribute('href', `${base}?text=${text}`); });
-    }
-    ['name','phone','msg'].forEach(id=> document.getElementById(id).addEventListener('input',updateWhatsAppLinks());
+الرسالة:
+${msg}`);
+        window.location.href = `mailto:mouhamad.medlej@gmail.com?subject=${subject}&body=${body}`;
+      });
+    })();
 
-    // ===== Mobile Menu Toggle =====
-    const btn = document.getElementById('menuBtn');
-    const mnav = document.getElementById('mobileMenu');
-    if(btn && mnav){
+    // تحديث روابط واتساب تلقائيًا
+    (function(){
+      const waTop = document.getElementById('waTop');
+      const waLink = document.getElementById('waLink');
+      function updateWhatsAppLinks(){
+        const name = encodeURIComponent(document.getElementById('name').value.trim());
+        const phone = encodeURIComponent(document.getElementById('phone').value.trim());
+        const msg = encodeURIComponent(document.getElementById('msg').value.trim());
+        const text = encodeURIComponent(`مرحبا، بدي موعد لتركيب/برمجة.
+الاسم: ${name}
+الهاتف: ${phone}
+التفاصيل: ${msg}`);
+        [waTop, waLink].filter(Boolean).forEach(a=>{
+          const base = a.getAttribute('href').split('?')[0];
+          a.setAttribute('href', `${base}?text=${text}`);
+        });
+      }
+      ['name','phone','msg'].forEach(id=>{
+        const el = document.getElementById(id);
+        if(el) el.addEventListener('input', updateWhatsAppLinks);
+      });
+    })();
+
+    // قائمة الموبايل
+    (function(){
+      const btn = document.getElementById('menuBtn');
+      const mnav = document.getElementById('mobileMenu');
+      if(!(btn && mnav)) return;
       const close = ()=>{ mnav.classList.remove('open'); mnav.hidden = true; btn.setAttribute('aria-expanded','false'); };
       const open = ()=>{ mnav.hidden = false; mnav.classList.add('open'); btn.setAttribute('aria-expanded','true'); };
       btn.addEventListener('click', ()=> mnav.hidden ? open() : close());
       mnav.addEventListener('click', (e)=>{ if(e.target.tagName==='A') close(); });
       document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
-    }
+    })();
+
+    // Scroll Reveal بسيط
+    (function(){
+      const reveals = Array.from(document.querySelectorAll('.reveal'));
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target);} });
+      }, {rootMargin:'-10% 0px -10% 0px', threshold: .1});
+      reveals.forEach(el=> io.observe(el));
+    })();
     <script>
     // سنة ديناميكية
     document.getElementById('y').textContent = new Date().getFullYear();
 
     // إرسال عبر البريد
-    const form = document.getElementById('contactForm');
-    form.addEventListener('submit', (e)=>{
-      e.preventDefault();
-      const name = document.getElementById('name').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const msg = document.getElementById('msg').value.trim();
-      const subject = encodeURIComponent('طلب خدمة — kamal services');
-      const body = encodeURIComponent(`الاسم: ${name}
+    (function(){
+      const form = document.getElementById('contactForm');
+      if(!form) return;
+      form.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        const name = document.getElementById('name').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const msg = document.getElementById('msg').value.trim();
+        const subject = encodeURIComponent('طلب خدمة — kamal services');
+        const body = encodeURIComponent(`الاسم: ${name}
 الهاتف: ${phone}
 
 الرسالة:
 ${msg}`);
-      window.location.href = `mailto:mouhamad.medlej@gmail.com?subject=${subject}&body=${body}`;
-    });
+        window.location.href = `mailto:mouhamad.medlej@gmail.com?subject=${subject}&body=${body}`;
+      });
+    })();
 
     // تحديث روابط واتساب تلقائيًا
-    function updateWhatsAppLinks(){
-      const name = encodeURIComponent(document.getElementById('name').value.trim());
-      const phone = encodeURIComponent(document.getElementById('phone').value.trim());
-      const msg = encodeURIComponent(document.getElementById('msg').value.trim());
-      const text = encodeURIComponent(`مرحبا، بدي موعد لتركيب/برمجة.
+    (function(){
+      const waTop = document.getElementById('waTop');
+      const waLink = document.getElementById('waLink');
+      function updateWhatsAppLinks(){
+        const name = encodeURIComponent(document.getElementById('name').value.trim());
+        const phone = encodeURIComponent(document.getElementById('phone').value.trim());
+        const msg = encodeURIComponent(document.getElementById('msg').value.trim());
+        const text = encodeURIComponent(`مرحبا، بدي موعد لتركيب/برمجة.
 الاسم: ${name}
 الهاتف: ${phone}
 التفاصيل: ${msg}`);
-      const links = [document.getElementById('waLink'), document.getElementById('waTop')].filter(Boolean);
-      links.forEach(a=>{ const base = a.getAttribute('href').split('?')[0]; a.setAttribute('href', `${base}?text=${text}`); });
-    }
-    ['name','phone','msg'].forEach(id=> document.getElementById(id).addEventListener('input',updateWhatsAppLinks));
+        [waTop, waLink].filter(Boolean).forEach(a=>{ const base = a.getAttribute('href').split('?')[0]; a.setAttribute('href', `${base}?text=${text}`); });
+      }
+      ['name','phone','msg'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('input',updateWhatsAppLinks); });
+    })();
 
-    // ===== Scroll Reveal =====
-    const reveals = Array.from(document.querySelectorAll('.reveal'));
-    const io = new IntersectionObserver((entries)=>{
-      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target);} });
-    }, {rootMargin:'-10% 0px -10% 0px', threshold: .1});
-    reveals.forEach(el=> io.observe(el));
+    // قائمة الموبايل
+    (function(){
+      const btn = document.getElementById('menuBtn');
+      const mnav = document.getElementById('mobileMenu');
+      if(!(btn && mnav)) return;
+      const close = ()=>{ mnav.classList.remove('open'); mnav.hidden = true; btn.setAttribute('aria-expanded','false'); };
+      const open = ()=>{ mnav.hidden = false; mnav.classList.add('open'); btn.setAttribute('aria-expanded','true'); };
+      btn.addEventListener('click', ()=> mnav.hidden ? open() : close());
+      mnav.addEventListener('click', (e)=>{ if(e.target.tagName==='A') close(); });
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
+    })();
 
-    // ===== Hero Slider =====
-    const slider = document.getElementById('heroSlider');
-    if(slider){
-      const slides = Array.from(slider.querySelectorAll('.slide'));
-      const dotsWrap = slider.querySelector('.dots');
-      slides.forEach((_,i)=>{ const d=document.createElement('span'); d.className='dot'+(i===0?' active':''); d.addEventListener('click',()=>go(i)); dotsWrap.appendChild(d);});
-      const dots = Array.from(dotsWrap.querySelectorAll('.dot'));
-      let idx=0, timer;
-      const go = (n)=>{ idx = (n+slides.length)%slides.length; slides.forEach((s,i)=>s.classList.toggle('active', i===idx)); dots.forEach((d,i)=>d.classList.toggle('active', i===idx)); reset(); };
-      const next = ()=> go(idx+1);
-      const reset = ()=>{ clearInterval(timer); timer = setInterval(next, 4200); };
-      reset();
-      slider.addEventListener('mouseenter',()=>clearInterval(timer));
-      slider.addEventListener('mouseleave',reset);
-    }
+    // ===== Auto-assign entrance animations to site elements =====
+    (function(){
+      const $ = (sel,root=document)=> Array.from(root.querySelectorAll(sel));
+      const hero = document.querySelector('.hero');
+      if(hero){
+        const h1 = hero.querySelector('h1');
+        if(h1){ h1.classList.add('ani','fade'); h1.style.setProperty('--delay','.15s'); }
+        $('.badge, .lead, .hero-actions, .row', hero).forEach((el,i)=>{
+          el.classList.add('ani','fade-right');
+          el.style.setProperty('--delay', (0.25 + i*0.15)+'s');
+        });
+        const media = hero.querySelector('.hero-photo, .mock, .card.slider');
+        if(media){ media.classList.add('ani','fade-left'); media.style.setProperty('--delay','.35s'); }
+      }
+      // Sections
+      $('section h2').forEach(el=> el.classList.add('ani','fade-down'));
+      $('#services .service').forEach((el,i)=>{ el.classList.add('ani','fade-up'); el.style.setProperty('--delay',(0.15+i*0.12)+'s'); });
+      $('#projects .project').forEach((el,i)=>{ el.classList.add('ani','zoom-in'); el.style.setProperty('--delay',(0.15+i*0.12)+'s'); });
+      $('#about .card').forEach((el,i)=>{ el.classList.add('ani','fade-up'); el.style.setProperty('--delay',(0.15+i*0.12)+'s'); });
+      $('#contact form, #contact .card').forEach((el,i)=>{ el.classList.add('ani', i===0?'fade-right':'fade-left'); el.style.setProperty('--delay',(0.2+i*0.2)+'s'); });
+    })();
+
+    // ===== IntersectionObserver to trigger animations on enter =====
+    (function(){
+      const els = document.querySelectorAll('.ani');
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{ if(entry.isIntersecting){ entry.target.classList.add('in'); io.unobserve(entry.target); } });
+      }, {threshold:0.15, rootMargin:'0px 0px -10% 0px'});
+      els.forEach(el=> io.observe(el));
+    })();
   </script>
 </body>
 </html>
